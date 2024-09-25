@@ -123,12 +123,12 @@ app.get('/getAllAssets', async (req, res) => {
 });
 
 app.get('/getAsset', async (req, res) => {
-    const assetId = req.query.assetId;
+    const id = req.query.id;
 
-    if (assetId == undefined) {
+    if (id == undefined) {
         res.send({
             error: 1,
-            errmsg: "assetId can not undefined."
+            errmsg: "id can not undefined."
         });
     } else {
         const client = await newGrpcConnection();
@@ -162,7 +162,7 @@ app.get('/getAsset', async (req, res) => {
             // Return all the current assets on the ledger.
             res.send({
                 error: 0,
-                data: await readAssetByID(contract, assetId.toString())
+                data: await readAssetByID(contract, id.toString())
             });
         } catch (error: any) {
             console.log(error);
@@ -178,24 +178,24 @@ app.get('/getAsset', async (req, res) => {
 });
 
 app.get('/createAsset', async (req, res) => {
-    let assetId = req.query.assetId;
+    let id = req.query.id;
     let color = req.query.color;
     let size = req.query.size;
     let owner = req.query.owner;
-    let value = req.query.value;
+    let appraisedValue = req.query.appraisedValue;
 
-    if (assetId == undefined || color == undefined || size == undefined || owner == undefined || value == undefined) {
+    if (id == undefined || color == undefined || size == undefined || owner == undefined || appraisedValue == undefined) {
         res.send({
             error: 1,
             errmsg: "Missing some variables."
         });
     } else {
         const client = await newGrpcConnection();
-        assetId = assetId.toString();
+        id = id.toString();
         color = color.toString();
         size = size.toString();
         owner = owner.toString();
-        value = value.toString();
+        appraisedValue = appraisedValue.toString();
 
         const gateway = connect({
             client,
@@ -226,7 +226,7 @@ app.get('/createAsset', async (req, res) => {
             // Return all the current assets on the ledger.
             res.send({
                 error: 0,
-                data: await createAsset(contract, assetId, color, size, owner, value)
+                data: await createAsset(contract, id, color, size, owner, appraisedValue)
             });
         } catch (error: any) {
             console.log(error);
@@ -242,17 +242,17 @@ app.get('/createAsset', async (req, res) => {
 });
 
 app.get('/transferAsset', async (req, res) => {
-    let assetId = req.query.assetId;
+    let id = req.query.id;
     let newOwner = req.query.newOwner;
 
-    if (assetId == undefined || newOwner == undefined) {
+    if (id == undefined || newOwner == undefined) {
         res.send({
             error: 1,
             errmsg: "Missing some variables."
         });
     } else {
         const client = await newGrpcConnection();
-        assetId = assetId.toString();
+        id = id.toString();
         newOwner = newOwner.toString();
 
         const gateway = connect({
@@ -284,7 +284,7 @@ app.get('/transferAsset', async (req, res) => {
             // Return all the current assets on the ledger.
             res.send({
                 error: 0,
-                data: await transferAssetAsync(contract, assetId, newOwner)
+                data: await transferAssetAsync(contract, id, newOwner)
             });
         } catch (error: any) {
             console.log(error);
@@ -331,12 +331,12 @@ async function getAllAssets(contract: Contract): Promise<any> {
 /**
  * Submit a transaction synchronously, blocking until it has been committed to the ledger.
  */
-async function createAsset(contract: Contract, assetId: string, color: string, size: string, owner: string, value: string): Promise<string> {
+async function createAsset(contract: Contract, id: string, color: string, size: string, owner: string, appraisedValue: string): Promise<string> {
     console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, Color, Size, Owner and AppraisedValue arguments');
 
     let asset;
     try {
-        asset = await readAssetByID(contract, assetId);
+        asset = await readAssetByID(contract, id);
     } catch (error) {
         asset = null;
     }
@@ -344,11 +344,11 @@ async function createAsset(contract: Contract, assetId: string, color: string, s
     if (asset == null) {
         await contract.submitTransaction(
             'CreateAsset',
-            assetId,
+            id,
             color,
             size,
             owner,
-            value,
+            appraisedValue,
         );
     
         console.log('*** Transaction committed successfully');
@@ -363,11 +363,11 @@ async function createAsset(contract: Contract, assetId: string, color: string, s
  * Submit transaction asynchronously, allowing the application to process the smart contract response (e.g. update a UI)
  * while waiting for the commit notification.
  */
-async function transferAssetAsync(contract: Contract, assetId: string, newOwner: string): Promise<string> {
+async function transferAssetAsync(contract: Contract, id: string, newOwner: string): Promise<string> {
     console.log('\n--> Async Submit Transaction: TransferAsset, updates existing asset owner');
 
     const commit = await contract.submitAsync('TransferAsset', {
-        arguments: [assetId, newOwner],
+        arguments: [id, newOwner],
     });
     const oldOwner = utf8Decoder.decode(commit.getResult());
 
@@ -383,10 +383,10 @@ async function transferAssetAsync(contract: Contract, assetId: string, newOwner:
     return "Transaction committed successfully";
 }
 
-async function readAssetByID(contract: Contract, assetId: string): Promise<any> {
+async function readAssetByID(contract: Contract, id: string): Promise<any> {
     console.log('\n--> Evaluate Transaction: ReadAsset, function returns asset attributes');
 
-    const resultBytes = await contract.evaluateTransaction('ReadAsset', assetId);
+    const resultBytes = await contract.evaluateTransaction('ReadAsset', id);
 
     const resultJson = utf8Decoder.decode(resultBytes);
     const result = JSON.parse(resultJson);
