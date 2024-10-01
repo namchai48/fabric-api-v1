@@ -41,25 +41,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/init', async (req, res) => {
-    const client = await newGrpcConnection();
+    const client: any = await newGrpcConnection();
 
     const gateway = connect({
         client,
         identity: await newIdentity(),
         signer: await newSigner(),
-        // Default timeouts for different gRPC calls
-        evaluateOptions: () => {
-            return { deadline: Date.now() + 5000 }; // 5 seconds
-        },
-        endorseOptions: () => {
-            return { deadline: Date.now() + 15000 }; // 15 seconds
-        },
-        submitOptions: () => {
-            return { deadline: Date.now() + 5000 }; // 5 seconds
-        },
-        commitStatusOptions: () => {
-            return { deadline: Date.now() + 60000 }; // 1 minute
-        },
     });
 
     try {
@@ -82,25 +69,12 @@ app.get('/init', async (req, res) => {
 });
 
 app.get('/getAllAssets', async (req, res) => {
-    const client = await newGrpcConnection();
+    const client: any = await newGrpcConnection();
 
     const gateway = connect({
         client,
         identity: await newIdentity(),
         signer: await newSigner(),
-        // Default timeouts for different gRPC calls
-        evaluateOptions: () => {
-            return { deadline: Date.now() + 5000 }; // 5 seconds
-        },
-        endorseOptions: () => {
-            return { deadline: Date.now() + 15000 }; // 15 seconds
-        },
-        submitOptions: () => {
-            return { deadline: Date.now() + 5000 }; // 5 seconds
-        },
-        commitStatusOptions: () => {
-            return { deadline: Date.now() + 60000 }; // 1 minute
-        },
     });
 
     try {
@@ -131,25 +105,12 @@ app.get('/getAsset', async (req, res) => {
             errmsg: "id can not undefined."
         });
     } else {
-        const client = await newGrpcConnection();
+        const client: any = await newGrpcConnection();
 
         const gateway = connect({
             client,
             identity: await newIdentity(),
             signer: await newSigner(),
-            // Default timeouts for different gRPC calls
-            evaluateOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            endorseOptions: () => {
-                return { deadline: Date.now() + 15000 }; // 15 seconds
-            },
-            submitOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            commitStatusOptions: () => {
-                return { deadline: Date.now() + 60000 }; // 1 minute
-            },
         });
     
         try {
@@ -190,7 +151,7 @@ app.get('/createAsset', async (req, res) => {
             errmsg: "Missing some variables."
         });
     } else {
-        const client = await newGrpcConnection();
+        const client: any = await newGrpcConnection();
         id = id.toString();
         color = color.toString();
         size = size.toString();
@@ -201,19 +162,6 @@ app.get('/createAsset', async (req, res) => {
             client,
             identity: await newIdentity(),
             signer: await newSigner(),
-            // Default timeouts for different gRPC calls
-            evaluateOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            endorseOptions: () => {
-                return { deadline: Date.now() + 15000 }; // 15 seconds
-            },
-            submitOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            commitStatusOptions: () => {
-                return { deadline: Date.now() + 60000 }; // 1 minute
-            },
         });
     
         try {
@@ -251,7 +199,7 @@ app.get('/transferAsset', async (req, res) => {
             errmsg: "Missing some variables."
         });
     } else {
-        const client = await newGrpcConnection();
+        const client: any = await newGrpcConnection();
         id = id.toString();
         newOwner = newOwner.toString();
 
@@ -259,19 +207,6 @@ app.get('/transferAsset', async (req, res) => {
             client,
             identity: await newIdentity(),
             signer: await newSigner(),
-            // Default timeouts for different gRPC calls
-            evaluateOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            endorseOptions: () => {
-                return { deadline: Date.now() + 15000 }; // 15 seconds
-            },
-            submitOptions: () => {
-                return { deadline: Date.now() + 5000 }; // 5 seconds
-            },
-            commitStatusOptions: () => {
-                return { deadline: Date.now() + 60000 }; // 1 minute
-            },
         });
     
         try {
